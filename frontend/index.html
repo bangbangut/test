@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 한 줄 문장 생성기 (Node.js ver.)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        h1 { color: #333; }
+        textarea { width: 100%; height: 60px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { display: block; width: 100%; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #45a049; }
+        #result { margin-top: 20px; padding: 15px; background-color: #f1f8e9; border-left: 5px solid #4CAF50; min-height: 50px; }
+    </style>
+</head>
+<body>
+    <h1>AI 한 줄 문장 생성기</h1>
+    <p>문장을 만들고 싶은 주제를 입력하세요. (예: 새벽의 고요함, 첫눈, 코딩의 즐거움)</p>
+    <textarea id="topicInput" placeholder="여기에 주제를 입력..."></textarea>
+    <button id="generateBtn">생성하기</button>
+    <div id="result">결과가 여기에 표시됩니다.</div>
+
+    <script>
+        const generateBtn = document.getElementById('generateBtn');
+        const topicInput = document.getElementById('topicInput');
+        const resultDiv = document.getElementById('result');
+
+        generateBtn.addEventListener('click', async () => {
+            const topic = topicInput.value.trim();
+            if (!topic) {
+                alert('주제를 입력해주세요!');
+                return;
+            }
+
+            resultDiv.textContent = 'AI가 문장을 만들고 있어요...';
+            generateBtn.disabled = true;
+
+            try {
+                // 우리 백엔드 서버의 API 엔드포인트로 요청
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('서버에서 오류가 발생했습니다.');
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.textContent = data.error;
+                } else {
+                    resultDiv.textContent = data.sentence;
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.textContent = '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+            } finally {
+                generateBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

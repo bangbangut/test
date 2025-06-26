@@ -1,0 +1,12 @@
+# .gitignore
+
+# Node
+node_modules/
+npm-debug.log
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
